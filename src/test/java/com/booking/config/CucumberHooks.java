@@ -1,10 +1,10 @@
 package com.booking.config;
 
+import io.cucumber.java.Before;
 import io.restassured.RestAssured;
-import org.junit.jupiter.api.BeforeAll;
-public class RestAssuredConfig {
-    @BeforeAll
-    public static void setup() {
+public class CucumberHooks {
+    @Before
+    public void setup() {
         RestAssured.baseURI = "https://automationintesting.online";
         RestAssured.basePath = "/api";
     }
