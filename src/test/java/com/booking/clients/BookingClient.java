@@ -1,4 +1,4 @@
-package clients;
+package com.booking.clients;
 
 public class BookingClient {
 }

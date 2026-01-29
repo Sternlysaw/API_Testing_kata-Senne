@@ -1,4 +1,4 @@
-package models;
+package com.booking.models;
 
 public class BookingRequest {
 }

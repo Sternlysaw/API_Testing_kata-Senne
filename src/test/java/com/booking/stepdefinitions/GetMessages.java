@@ -15,7 +15,7 @@ public class GetMessages {
 
         response = given().log().all()
                         .when()
-                        .get("https://automationintesting.online/api/message");
+                        .get("/message");
     }
 
     @Then("I should receive all existing messages")
