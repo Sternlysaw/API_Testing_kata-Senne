@@ -16,3 +16,9 @@ Feature: Booking API
   Scenario: Create booking with invalid email
     When I create a booking with an invalid email
     Then the booking is rejected with status code 400
+
+  @booking @auth
+  Scenario: Retrieve booking without authentication
+    Given a booking exists
+    When I retrieve the booking by id without authentication
+    Then the request is rejected with status code 401

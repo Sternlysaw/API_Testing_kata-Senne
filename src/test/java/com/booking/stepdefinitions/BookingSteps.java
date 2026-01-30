@@ -81,4 +81,15 @@ public class BookingSteps {
         response.then()
                 .statusCode(statusCode);
     }
+
+    @When("I retrieve the booking by id without authentication")
+    public void iRetrieveTheBookingByIdWithoutAuthentication() {
+        response = given()
+                .when()
+                .get("/booking/" + bookingId);
+    }
+    @Then("the request is rejected with status code {int}")
+    public void theRequestIsRejectedWithStatusCode(int statusCode) {
+        response.then().statusCode(statusCode);
+    }
 }
