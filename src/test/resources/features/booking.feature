@@ -22,3 +22,9 @@ Feature: Booking API
     Given a booking exists
     When I retrieve the booking by id without authentication
     Then the request is rejected with status code 401
+
+  @booking @negative
+  Scenario: Creating a booking with invalid dates fails
+    When I create a booking with checkout before checkin
+  # API is expected to reject this, but currently allows it
+    Then the booking creation fails with a client error
