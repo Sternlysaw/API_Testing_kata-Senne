@@ -10,6 +10,7 @@ import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 
 import static io.restassured.RestAssured.given;
+import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.Matchers.*;
 
 public class BookingSteps {
@@ -55,13 +56,16 @@ public class BookingSteps {
     public void theBookingDetailsAreReturnedCorrectly() {
         response.then()
                 .statusCode(200)
+                .body(matchesJsonSchemaInClasspath("spec/booking.schema.json"))
+                // Email and phone are intentionally not asserted here:
+                // although required in the request, they are not consistently returned
+                // by the GET booking endpoint (observed API behavior).
+                // The JSON schema allows null values for these fields to reflect reality.
                 .body("firstname", equalTo(bookingRequest.getFirstname()))
                 .body("lastname", equalTo(bookingRequest.getLastname()))
                 .body("depositpaid", equalTo(bookingRequest.isDepositpaid()))
-                .body("bookingdates.checkin",
-                        equalTo(bookingRequest.getBookingdates().getCheckin()))
-                .body("bookingdates.checkout",
-                        equalTo(bookingRequest.getBookingdates().getCheckout()));
+                .body("bookingdates.checkin", equalTo(bookingRequest.getBookingdates().getCheckin()))
+                .body("bookingdates.checkout", equalTo(bookingRequest.getBookingdates().getCheckout()));
     }
 
     @When("I create a booking with an invalid email")
