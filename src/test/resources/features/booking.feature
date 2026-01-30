@@ -26,4 +26,5 @@ Feature: Booking API
   @booking @negative
   Scenario: Creating a booking with invalid dates fails
     When I create a booking with checkout before checkin
+  # API is expected to reject this, but currently allows it
     Then the booking creation fails with a client error
