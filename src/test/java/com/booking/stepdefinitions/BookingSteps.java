@@ -2,6 +2,8 @@ package com.booking.stepdefinitions;
 
 import com.booking.builders.BookingTestDataBuilder;
 import com.booking.models.BookingRequest;
+import com.booking.factory.BookingRequestFactory;
+import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.http.ContentType;
@@ -13,33 +15,52 @@ import static org.hamcrest.Matchers.*;
 public class BookingSteps {
 
     private Response response;
+    private int bookingId;
+    private BookingRequest bookingRequest;
 
     @When("I create a booking with valid data")
     public void iCreateABookingWithValidData() {
-
-        for (int attempt = 0; attempt < 5; attempt++) {
-            BookingRequest booking = BookingTestDataBuilder.validBooking();
-
-            response = given()
-                    .contentType(ContentType.JSON)
-                    .body(booking)
-                    .log().all()
-                    .when()
-                    .post("/booking");
-
-            if (response.statusCode() == 201) {
-                return; // success
-            }
-        }
-
-        throw new AssertionError("Could not create booking after multiple attempts due to conflicts");
+        response = BookingRequestFactory.createBookingSuccessfully();
     }
 
     @Then("the booking is created successfully")
     public void theBookingIsCreatedSuccessfully() {
         response.then()
-                .log().all()
                 .statusCode(201)
                 .body("bookingid", notNullValue());
+    }
+
+    @Given("a booking exists")
+    public void aBookingExists() {
+        bookingRequest = new BookingTestDataBuilder().build();
+
+        response = BookingRequestFactory.createBookingAndReturnResponse(bookingRequest);
+
+        bookingId = response
+                .then()
+                .extract()
+                .path("bookingid");
+    }
+
+    @When("I retrieve the booking by id")
+    public void iRetrieveTheBookingById() {
+        response = given()
+                .cookie("token", AuthSteps.token)
+                .when()
+                .get("/booking/" + bookingId);
+    }
+
+
+    @Then("the booking details are returned correctly")
+    public void theBookingDetailsAreReturnedCorrectly() {
+        response.then()
+                .statusCode(200)
+                .body("firstname", equalTo(bookingRequest.getFirstname()))
+                .body("lastname", equalTo(bookingRequest.getLastname()))
+                .body("depositpaid", equalTo(bookingRequest.isDepositpaid()))
+                .body("bookingdates.checkin",
+                        equalTo(bookingRequest.getBookingdates().getCheckin()))
+                .body("bookingdates.checkout",
+                        equalTo(bookingRequest.getBookingdates().getCheckout()));
     }
 }
