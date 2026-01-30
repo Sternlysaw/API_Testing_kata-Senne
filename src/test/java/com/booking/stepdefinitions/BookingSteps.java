@@ -63,4 +63,22 @@ public class BookingSteps {
                 .body("bookingdates.checkout",
                         equalTo(bookingRequest.getBookingdates().getCheckout()));
     }
+
+    @When("I create a booking with an invalid email")
+    public void iCreateABookingWithAnInvalidEmail() {
+        BookingRequest request = new BookingTestDataBuilder()
+                .withInvalidEmail()
+                .build();
+
+        response = given()
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when()
+                .post("/booking");
+    }
+    @Then("the booking is rejected with status code {int}")
+    public void theBookingIsRejectedWithStatusCode(int statusCode) {
+        response.then()
+                .statusCode(statusCode);
+    }
 }

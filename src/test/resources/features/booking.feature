@@ -11,3 +11,8 @@ Feature: Booking API
     And a booking exists
     When I retrieve the booking by id
     Then the booking details are returned correctly
+
+  @booking
+  Scenario: Create booking with invalid email
+    When I create a booking with an invalid email
+    Then the booking is rejected with status code 400
