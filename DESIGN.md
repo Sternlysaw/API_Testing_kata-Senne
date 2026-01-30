@@ -27,3 +27,24 @@ The system under test is an external hotel booking API, which resets frequently 
 ## Notes on external API behavior
 - The API under test is external and sometimes unstable.
 - Status code assertions are based on observed behavior rather than assumptions.
+
+## API Contract Validation
+
+Schema validation is used selectively on read operations where the response
+represents a stable contract, rather than on all endpoints indiscriminately.
+
+For responses where the API returns a full booking representation (GET /booking/{id}),
+JSON Schema validation is used to assert the structural correctness of the response.
+
+The schema is derived from the provided OpenAPI specification and stored under
+`src/test/resources/spec`.
+
+During implementation it was observed that, although `email` and `phone` are required
+fields in the booking request, they are not consistently returned by the GET booking
+endpoint. For this reason:
+
+- The JSON schema allows these fields to be nullable
+- Assertions on `email` and `phone` values are intentionally omitted
+
+This approach reflects observed API behavior and avoids false negatives while still
+ensuring strong contract validation.
